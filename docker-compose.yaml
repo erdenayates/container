@@ -1,26 +1,33 @@
 version: '3.8'
 services:
-  web:
-    build: .
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+  flask-app:
+    build:
+      context: ./flask
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
     depends_on:
-      - db
-    environment:
-      - FLASK_APP=app.py
-      - FLASK_RUN_HOST=0.0.0.0
-  db:
-    image: mysql:5.7
-    volumes:
-      - db_data:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: information_schema
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      - mysql
+  node-app:
+    build:
+      context: ./node
+      dockerfile: Dockerfile
     ports:
-      - "3306:3306"
-
-volumes:
-  db_data:
+      - "3000:3000"
+    depends_on:
+      - mysql
+  php-app:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    depends_on:
+      - mysql
 
